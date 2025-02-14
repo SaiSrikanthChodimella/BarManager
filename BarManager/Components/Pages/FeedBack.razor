@@ -1,0 +1,68 @@
+﻿@page "/FeedBack"
+@inject NotificationService NotificationService
+@using System.ComponentModel.DataAnnotations
+
+<h3>Feedback Form</h3>
+
+<EditForm Model="@feedback" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <RadzenCard Style="padding: 2rem;">
+        <!-- Name Field -->
+        <RadzenFieldset Legend="Name">
+            <RadzenTextBox @bind-Value="feedback.Name" Placeholder="Enter your name" Style="width: 100%;" />
+            <ValidationMessage For="@(() => feedback.Name)" />
+        </RadzenFieldset>
+
+        <!-- Email Field -->
+        <RadzenFieldset Legend="Email">
+            <RadzenTextBox @bind-Value="feedback.Email" Placeholder="Enter your email" Style="width: 100%;" />
+            <ValidationMessage For="@(() => feedback.Email)" />
+        </RadzenFieldset>
+
+        <!-- Rating Field -->
+        <RadzenFieldset Legend="Rating">
+            <RadzenRating @bind-Value="feedback.Rating" Max="5" />
+            <ValidationMessage For="@(() => feedback.Rating)" />
+        </RadzenFieldset>
+
+        <!-- Comments Field -->
+        <RadzenFieldset Legend="Comments">
+            <RadzenTextArea @bind-Value="feedback.Comments" Placeholder="Enter your comments" Style="width: 100%;" Rows="5" />
+            <ValidationMessage For="@(() => feedback.Comments)" />
+        </RadzenFieldset>
+
+        <!-- Submit Button -->
+        <RadzenButton ButtonType="ButtonType.Submit" Text="Submit" ButtonStyle="ButtonStyle.Primary" Icon="send" Style="margin-top: 1rem;" />
+    </RadzenCard>
+</EditForm>
+
+@code {
+    private FeedbackModel feedback = new FeedbackModel();
+
+    private void HandleValidSubmit()
+    {
+        // Handle form submission (e.g., send data to an API or display a success message)
+        NotificationService.Notify(NotificationSeverity.Success, "Thank you for your feedback!");
+        feedback = new FeedbackModel(); // Reset the form
+    }
+
+    private class FeedbackModel
+    {
+        [Required(ErrorMessage = "Name is required.")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email address.")]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "Rating is required.")]
+        [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
+        public int Rating { get; set; }
+
+        [Required(ErrorMessage = "Comments are required.")]
+        [MinLength(10, ErrorMessage = "Comments must be at least 10 characters.")]
+        public string Comments { get; set; }
+    }
+}

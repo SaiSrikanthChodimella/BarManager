@@ -10,7 +10,7 @@
             <!-- Left Section -->
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10px">
                 <RadzenSidebarToggle Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
-                <RadzenLabel Text="The bar Manager" />
+                <RadzenLabel Text="The Bar Manager" />
             </RadzenStack>
 
             <!-- Right Section -->
@@ -25,8 +25,32 @@
             <RadzenPanelMenuItem Text="Home" Icon="home" Path="/" />
             <RadzenPanelMenuItem Text="Bar Team" Icon="account_box" Path="/Team" />
             <RadzenPanelMenuItem Text="The Drinks Menu" Icon="menu_book" Path="/Bar_Menu" />
-            <RadzenPanelMenuItem Text="Bar Events Planner" Icon="event" Path="/Plan_Events" />
             <RadzenPanelMenuItem Text="Bar Events Viewer" Icon="event" Path="/View_Events" />
+            <RadzenPanelMenuItem Text="Bar History" Icon="timeline" Path="/TimeLine" />
+            <RadzenPanelMenuItem Text="Write to Us" Icon="forum" Path="/FeedBack" />
+            <RadzenAccordion>
+                <Items>
+                    <RadzenAccordionItem Text="Admins Only" Icon="shield_person" CollapseTitle="Collapse admin page."
+                                         ExpandTitle="Expand admin page." CollapseAriaLabel="Collapse the admin page."
+                                         ExpandAriaLabel="Expand the admin page.">
+                        <RadzenPanelMenuItem Text="Bar Events Planner" Icon="event" Path="/Plan_Events" />
+                        <RadzenAccordion>
+                            <Items>
+                                <RadzenAccordionItem Text="Statistics" Icon="monitoring" CollapseTitle="Collapse statistics."
+                                                     ExpandTitle="Expand statistics." CollapseAriaLabel="Collapse the statistics details."
+                                                     ExpandAriaLabel="Expand the statistics details.">
+
+                                    <RadzenPanelMenuItem Text="Drinks Trend" Icon="pie_chart" Path="/PieChart" />
+                                    <RadzenPanelMenuItem Text="Sale of Drinks" Icon="bar_chart" Path="/BarChart" />
+                                    <RadzenPanelMenuItem Text="Full Overview" Icon="query_stats" Path="/StylingChart" />
+                                </RadzenAccordionItem>
+
+                            </Items>
+                        </RadzenAccordion>
+                    </RadzenAccordionItem>
+                </Items>
+            </RadzenAccordion>
+
         </RadzenPanelMenu>
     </RadzenSidebar>
 
