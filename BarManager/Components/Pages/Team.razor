@@ -1,0 +1,28 @@
+﻿@page "/Team"
+
+<PageTitle>Bar Team</PageTitle>
+
+<RadzenRow Style="margin: 1rem;">
+    @for (int i = 0; i < 20; i++) // 10 columns x 2 rows = 20 cards
+    {
+            <RadzenColumn Size="1" SizeMD="2" SizeSM="4" Style="margin-bottom: 1rem;">
+
+                <RadzenCard Style="text-align: center; padding: 1rem;">
+                    <RadzenImage Path="Person" Style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 1rem;" />
+                    <h3>@Name</h3>
+                    <p>@Description</p>
+                </RadzenCard>
+
+            </RadzenColumn>
+    }
+</RadzenRow>
+
+
+@code {
+
+    [Parameter]
+    public string Name { get; set; } = "Un Nammed User";
+
+    [Parameter]
+    public string Description { get; set; } = "generic Description";
+}

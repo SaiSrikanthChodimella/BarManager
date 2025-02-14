@@ -1,0 +1,74 @@
+﻿@page "/Bar_Menu"
+
+<h3>Our Menu</h3>
+
+<RadzenTabs @bind-SelectedIndex=@selectedIndex>
+    <Tabs>
+        <RadzenTabsItem Text="Starters">
+            <!-- Starters -->
+            <RadzenRow>
+                @foreach (var item in Starters)
+                {
+                    <RadzenColumn Size="12" SizeMD="6" SizeLG="4" Style="margin-bottom: 1.5rem;">
+                        <MenuCard Item="@item" />
+                    </RadzenColumn>
+                }
+            </RadzenRow>
+        </RadzenTabsItem>
+
+        <!-- Main Course -->
+        <RadzenTabsItem Text="Main Course">
+            <RadzenRow>
+                @foreach (var item in MainCourse)
+                {
+                    <RadzenColumn Size="12" SizeMD="6" SizeLG="4" Style="margin-bottom: 1.5rem;">
+                        <MenuCard Item="@item" />
+                    </RadzenColumn>
+                }
+            </RadzenRow>
+        </RadzenTabsItem>
+
+        <!-- Desserts -->
+        <RadzenTabsItem Text="Desserts">
+            <RadzenRow>
+                @foreach (var item in Desserts)
+                {
+                    <RadzenColumn Size="12" SizeMD="6" SizeLG="4" Style="margin-bottom: 1.5rem;">
+                        <MenuCard Item="@item" />
+                    </RadzenColumn>
+                }
+            </RadzenRow>
+        </RadzenTabsItem>
+    </Tabs>
+</RadzenTabs>
+
+@code {
+    int selectedIndex = 0;
+}
+
+
+
+@code {
+    private List<MenuItem> Starters = new List<MenuItem>
+    {
+        new MenuItem { Name = "Garlic Bread", Description = "Toasted bread with garlic butter", Price = 5.99m, Image = "https://via.placeholder.com/150" },
+        new MenuItem { Name = "Bruschetta", Description = "Tomato, basil, and mozzarella on toasted bread", Price = 6.99m, Image = "https://via.placeholder.com/150" },
+        new MenuItem { Name = "Caesar Salad", Description = "Romaine lettuce, croutons, and parmesan", Price = 7.99m, Image = "https://via.placeholder.com/150" }
+    };
+
+    private List<MenuItem> MainCourse = new List<MenuItem>
+    {
+        new MenuItem { Name = "Grilled Salmon", Description = "Fresh salmon with lemon butter sauce", Price = 15.99m, Image = "https://via.placeholder.com/150" },
+        new MenuItem { Name = "Steak Frites", Description = "Grilled steak with french fries", Price = 18.99m, Image = "https://via.placeholder.com/150" },
+        new MenuItem { Name = "Vegetable Pasta", Description = "Pasta with seasonal vegetables", Price = 12.99m, Image = "https://via.placeholder.com/150" }
+    };
+
+    private List<MenuItem> Desserts = new List<MenuItem>
+    {
+        new MenuItem { Name = "Chocolate Cake", Description = "Rich chocolate cake with ganache", Price = 8.99m, Image = "https://via.placeholder.com/150" },
+        new MenuItem { Name = "Cheesecake", Description = "Classic New York-style cheesecake", Price = 7.99m, Image = "https://via.placeholder.com/150" },
+        new MenuItem { Name = "Tiramisu", Description = "Italian coffee-flavored dessert", Price = 9.99m, Image = "https://via.placeholder.com/150" }
+    };
+
+
+}

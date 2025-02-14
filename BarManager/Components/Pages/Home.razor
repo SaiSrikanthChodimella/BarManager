@@ -1,38 +1,12 @@
 ﻿@page "/"
-@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
-<RadzenLayout>
-    <RadzenHeader>
-        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center" Gap="0px">
-            <!-- Left Section -->
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10px">
-                <RadzenSidebarToggle Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
-                <RadzenLabel Text="Header" />
-            </RadzenStack>
-
-            <!-- Right Section -->
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10px">
-                <RadzenAppearanceToggle />
-            </RadzenStack>
-        </RadzenStack>
-    </RadzenHeader>
-    <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
-        <RadzenPanelMenu>
-            <RadzenPanelMenuItem Text="Home" Icon="home" />
-            <RadzenPanelMenuItem Text="Admins" Icon="account_box"  />
-        </RadzenPanelMenu>
-    </RadzenSidebar>
-    <RadzenBody>
-        <div class="rz-p-4">
-            Body
-        </div>
-    </RadzenBody>
-    <RadzenFooter>
-        <FooterComponent />
-    </RadzenFooter>
-</RadzenLayout>
-
-@code {
-    bool sidebar1Expanded = true;
-}
+<RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Style="height: 100vh;">
+    <RadzenColumn Size="6" Style="text-align: center;">
+        <RadzenCard>
+            <h1 style="font-size: 3rem; margin-bottom: 1rem;">Welcome to Bar Management App</h1>
+            <p style="font-size: 1.25rem; margin-bottom: 2rem;">
+                Discover the best tools and features to make your life easier. Join us today and experience the future.
+            </p>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>

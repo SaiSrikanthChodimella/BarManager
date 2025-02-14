@@ -1,0 +1,7 @@
+﻿@inject EventsService EventsService
+@page "/Plan_Events"
+
+<RadzenScheduler @ref=@EventsService.scheduler SlotRender=@EventsService.OnSlotRender style="height: 768px;" TItem="Appointment" Data=@EventsService.appointments StartProperty="Start" EndProperty="End"
+                 TextProperty="Text" SelectedIndex="0" SlotSelect=@EventsService.OnSlotSelect AppointmentSelect=@EventsService.OnAppointmentSelect AppointmentRender=@EventsService.OnAppointmentRender MonthSelect=@EventsService.OnMonthSelect>
+    <RadzenYearPlannerView StartMonth="@EventsService.startMonth" />
+</RadzenScheduler>

@@ -1,4 +1,5 @@
 using BarManager.Components;
+using BarManager.Components.Pages.Events;
 using Radzen;
 
 namespace BarManager;
@@ -13,6 +14,9 @@ public class Program
         builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
         builder.Services.AddRadzenComponents();
+
+        builder.Services.AddScoped<DialogService>();
+        builder.Services.AddScoped<EventsService>();
 
         var app = builder.Build();
 

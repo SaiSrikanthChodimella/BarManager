@@ -1,11 +1,44 @@
-﻿@inherits LayoutComponentBase
+﻿@using BarManager.Components.Pages
+@inherits LayoutComponentBase
 
 <RadzenComponents @rendermode="InteractiveServer" />
 
-@Body
+<RadzenLayout>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center" Gap="0px">
+            <!-- Left Section -->
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10px">
+                <RadzenSidebarToggle Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
+                <RadzenLabel Text="The bar Manager" />
+            </RadzenStack>
+
+            <!-- Right Section -->
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="10px">
+                <RadzenAppearanceToggle />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenHeader>
+
+    <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
+        <RadzenPanelMenu>
+            <RadzenPanelMenuItem Text="Home" Icon="home" Path="/" />
+            <RadzenPanelMenuItem Text="Bar Team" Icon="account_box" Path="/Team" />
+            <RadzenPanelMenuItem Text="The Drinks Menu" Icon="menu_book" Path="/Bar_Menu" />
+            <RadzenPanelMenuItem Text="Bar Events Planner" Icon="event" Path="/Plan_Events" />
+            <RadzenPanelMenuItem Text="Bar Events Viewer" Icon="event" Path="/View_Events" />
+        </RadzenPanelMenu>
+    </RadzenSidebar>
+
+    <RadzenBody>
+        @Body
+    </RadzenBody>
+
+    <RadzenFooter>
+        @* <FooterComponent /> *@
+    </RadzenFooter>
+</RadzenLayout>
+
+@code {
+    bool sidebar1Expanded = true;
+}
