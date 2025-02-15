@@ -1,4 +1,5 @@
 using BarManagerAPI.Models;
+using BarManagerAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace BarManagerAPI
@@ -13,6 +14,8 @@ namespace BarManagerAPI
             builder.Services.AddAuthorization();
 
             builder.Services.AddDbContext<BarManagerDBContext>(options => options.UseInMemoryDatabase("MenuItems"));
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
@@ -29,116 +32,202 @@ namespace BarManagerAPI
 
             app.UseAuthorization();
 
-            app.MapGet("/MenuItems", async (BarManagerDBContext db) => await db.MenuItem.ToListAsync());
-
-            app.MapPost("/MenuItems", async (MenuItem menuItem, BarManagerDBContext db) =>
+            app.MapGet("/MenuItems", async (IUnitOfWork unitOfWork) =>
             {
-                db.MenuItem.Add(menuItem);
-                await db.SaveChangesAsync();
+                var items = await unitOfWork.MenuItemRepository.GetAllAsync();
+                return Results.Ok(items);
+            });
+
+            app.MapPost("/MenuItems", async (MenuItem menuItem, IUnitOfWork unitOfWork) =>
+            {
+                await unitOfWork.MenuItemRepository.AddAsync(menuItem);
+                await unitOfWork.SaveAsync();
 
                 return Results.Created($"/MenuItems/{menuItem.Id}", menuItem);
             });
 
-            app.MapPut("/Menuitems/{id}", async (int id, MenuItem updatedMenuItem, BarManagerDBContext db) =>
+            app.MapPut("/MenuItems/{id}", async (int id, MenuItem updatedMenuItem, IUnitOfWork unitOfWork) =>
             {
-                var menuItem = await db.MenuItem.FindAsync(id);
+                var menuItem = await unitOfWork.MenuItemRepository.GetByIdAsync(id);
 
-                if (menuItem is null) return Results.NotFound();
+                if (menuItem is null)
+                {
+                    return Results.NotFound();
+                }
 
                 menuItem.Name = updatedMenuItem.Name;
                 menuItem.Description = updatedMenuItem.Description;
                 menuItem.Price = updatedMenuItem.Price;
                 menuItem.Image = updatedMenuItem.Image;
 
-                await db.SaveChangesAsync();
+                unitOfWork.MenuItemRepository.Update(menuItem);
+                await unitOfWork.SaveAsync();
 
                 return Results.NoContent();
             });
 
-            app.MapDelete("/MenuItems/{id}", async (int id, BarManagerDBContext db) =>
+            app.MapDelete("/MenuItems/{id}", async (int id, IUnitOfWork unitOfWork) =>
             {
-                if (await db.MenuItem.FindAsync(id) is MenuItem menuItem)
-                {
-                    db.MenuItem.Remove(menuItem);
-                    await db.SaveChangesAsync();
-                    return Results.Ok(menuItem);
-                }
+                var menuItem = await unitOfWork.MenuItemRepository.GetByIdAsync(id);
 
-                return Results.NotFound();
+                if (menuItem is null)
+                {
+                    return Results.NotFound();
+                }
+                unitOfWork.MenuItemRepository.Delete(menuItem);
+
+                await unitOfWork.SaveAsync();
+                return Results.Ok(menuItem);
             });
 
             //Menu Category 
-            app.MapGet("/MenuCategory", async (BarManagerDBContext db) => await db.MenuCategory.ToListAsync());
-
-            app.MapPost("/MenuCategory", async (MenuCategory menuCategoryItem, BarManagerDBContext db) =>
+            app.MapGet("/MenuCategory", async (IUnitOfWork unitOfWork) =>
             {
-                db.MenuCategory.Add(menuCategoryItem);
-                await db.SaveChangesAsync();
+                var items = await unitOfWork.MenuCategoryRepository.GetAllAsync();
+                return Results.Ok(items);
+            });
+
+            app.MapPost("/MenuCategory", async (MenuCategory menuCategoryItem, IUnitOfWork unitOfWork) =>
+            {
+                await unitOfWork.MenuCategoryRepository.AddAsync(menuCategoryItem);
+                await unitOfWork.SaveAsync();
 
                 return Results.Created($"/MenuItems/{menuCategoryItem.Id}", menuCategoryItem);
             });
 
-            app.MapPut("/MenuCategory/{id}", async (int id, MenuCategory updatedMenuCategoryItem, BarManagerDBContext db) =>
+            app.MapPut("/MenuCategory/{id}", async (int id, MenuCategory updatedMenuCategoryItem, IUnitOfWork unitOfWork) =>
             {
-                var menuCategory = await db.MenuCategory.FindAsync(id);
+                var menuCategory = await unitOfWork.MenuCategoryRepository.GetByIdAsync(id);
 
-                if (menuCategory is null) return Results.NotFound();
+                if (menuCategory is null)
+                {
+                    return Results.NotFound();
+                }
 
                 menuCategory.Id = updatedMenuCategoryItem.Id;
                 menuCategory.Name = updatedMenuCategoryItem.Name;
 
-                await db.SaveChangesAsync();
+                unitOfWork.MenuCategoryRepository.Update(menuCategory);
+                await unitOfWork.SaveAsync();
 
                 return Results.NoContent();
             });
 
-            app.MapDelete("/MenuCategory/{id}", async (int id, BarManagerDBContext db) =>
+            app.MapDelete("/MenuCategory/{id}", async (int id, IUnitOfWork unitOfWork) =>
             {
-                if (await db.MenuCategory.FindAsync(id) is MenuCategory menuCategoryItem)
-                {
-                    db.MenuCategory.Remove(menuCategoryItem);
-                    await db.SaveChangesAsync();
-                    return Results.Ok(menuCategoryItem);
-                }
+                var menuCategory = await unitOfWork.MenuCategoryRepository.GetByIdAsync(id);
 
-                return Results.NotFound();
+                if (menuCategory is null)
+                {
+                    return Results.NotFound();
+                }
+                unitOfWork.MenuCategoryRepository.Delete(menuCategory);
+
+                await unitOfWork.SaveAsync();
+
+                return Results.Ok(menuCategory);
             });
 
             // Team Members 
-            app.MapGet("/TeamMembers", async (BarManagerDBContext db) => await db.TeamMembers.AsNoTracking().ToListAsync());
-
-            app.MapPost("/TeamMembers", async (TeamMembers member, BarManagerDBContext db) =>
+            app.MapGet("/TeamMembers", async (IUnitOfWork unitOfWork) =>
             {
-                db.TeamMembers.Add(member);
-                await db.SaveChangesAsync();
+                var items = await unitOfWork.TeamMembersRepository.GetAllAsync();
+                return Results.Ok(items);
+            });
+
+            app.MapPost("/TeamMembers", async (TeamMembers member, IUnitOfWork unitOfWork) =>
+            {
+                await unitOfWork.TeamMembersRepository.AddAsync(member);
+                await unitOfWork.SaveAsync();
 
                 return Results.Created($"/TeamMembers/{member.Id}", member);
             });
 
-            app.MapPut("/TeamMembers/{id}", async (int id, TeamMembers updatedTeamMember, BarManagerDBContext db) =>
+            app.MapPut("/TeamMembers/{id}", async (int id, TeamMembers updatedTeamMember, IUnitOfWork unitOfWork) =>
             {
-                var TeamMember = await db.TeamMembers.FindAsync(id);
+                var TeamMember = await unitOfWork.TeamMembersRepository.GetByIdAsync(id);
 
-                if (TeamMember is null) return Results.NotFound();
+                if (TeamMember is null)
+                {
+                    return Results.NotFound();
+                }
 
                 TeamMember.Name = updatedTeamMember.Name;
                 TeamMember.Description = updatedTeamMember.Description;
                 TeamMember.UserQuote = updatedTeamMember.UserQuote;
                 TeamMember.Image = updatedTeamMember.Image;
 
-                await db.SaveChangesAsync();
+                unitOfWork.TeamMembersRepository.Update(TeamMember);
+
+                await unitOfWork.SaveAsync();
 
                 return Results.NoContent();
             });
 
-            app.MapDelete("/TeamMembers/{id}", async (int id, BarManagerDBContext db) =>
+            app.MapDelete("/TeamMembers/{id}", async (int id, IUnitOfWork unitOfWork) =>
             {
-                if (await db.TeamMembers.FindAsync(id) is TeamMembers teamMember)
+                var teamMember = await unitOfWork.TeamMembersRepository.GetByIdAsync(id);
+
+                if (teamMember is null)
                 {
-                    db.TeamMembers.Remove(teamMember);
-                    await db.SaveChangesAsync();
-                    return Results.Ok(teamMember);
+                    return Results.NotFound();
                 }
+
+                unitOfWork.TeamMembersRepository.Delete(teamMember);
+
+                await unitOfWork.SaveAsync();
+
+                return Results.NotFound();
+            });
+
+            //Events
+            app.MapGet("/Events", async (IUnitOfWork unitOfWork) =>
+            {
+                var items = await unitOfWork.EventItemsRepository.GetAllAsync();
+                return Results.Ok(items);
+            });
+
+            app.MapPost("/Events", async (EventItems events, IUnitOfWork unitOfWork) =>
+            {
+                await unitOfWork.EventItemsRepository.AddAsync(events);
+                await unitOfWork.SaveAsync();
+
+                return Results.Created($"/TeamMembers/{events.Id}", events);
+            });
+
+            app.MapPut("/Events/{id}", async (int id, EventItems updatedeventItems, IUnitOfWork unitOfWork) =>
+            {
+                var eventitem = await unitOfWork.EventItemsRepository.GetByIdAsync(id);
+
+                if (eventitem is null)
+                {
+                    return Results.NotFound();
+                }
+
+                eventitem.Id = updatedeventItems.Id;
+                eventitem.Start = updatedeventItems.Start;
+                eventitem.End = updatedeventItems.End;
+                eventitem.Text = updatedeventItems.Text;
+
+                unitOfWork.EventItemsRepository.Update(eventitem);
+
+                await unitOfWork.SaveAsync();
+
+                return Results.NoContent();
+            });
+
+            app.MapDelete("/Events/{id}", async (int id, IUnitOfWork unitOfWork) =>
+            {
+                var eventItem = await unitOfWork.EventItemsRepository.GetByIdAsync(id);
+
+                if (eventItem is null)
+                {
+                    return Results.NotFound();
+                }
+
+                unitOfWork.EventItemsRepository.Delete(eventItem);
+
+                await unitOfWork.SaveAsync();
 
                 return Results.NotFound();
             });
