@@ -1,4 +1,6 @@
-﻿namespace BarManagerAPI.Repositories
+﻿using System.Linq.Expressions;
+
+namespace BarManagerAPI.Repositories
 {
     public interface IGenericRepository<T> where T : class
     {
@@ -11,5 +13,6 @@
         void Update(T entity);
 
         void Delete(T entity);
+        Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includeProperties);
     }
 }

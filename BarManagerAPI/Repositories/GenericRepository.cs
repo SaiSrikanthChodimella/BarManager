@@ -1,5 +1,6 @@
 ﻿using BarManagerAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BarManagerAPI.Repositories
 {
@@ -16,6 +17,18 @@ namespace BarManagerAPI.Repositories
         public void Update(T entity) => dBSet.Update(entity);
 
         public void Delete(T entity) => dBSet.Remove(entity);
+
+        public async Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> query = dBSet;
+
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            return await query.ToListAsync();
+        }
 
     }
 }
