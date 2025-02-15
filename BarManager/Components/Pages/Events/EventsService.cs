@@ -6,19 +6,19 @@ namespace BarManager.Components.Pages.Events
     public class EventsService(DialogService dialogService)
     {
         public DialogService _dialogService = dialogService;
-        public RadzenScheduler<Appointment> scheduler;
+        public RadzenScheduler<EventItems> scheduler;
 
         public Dictionary<DateTime, string> events = [];
         public Month startMonth = Month.January;
-        public IList<Appointment> appointments = new List<Appointment>
+        public IList<EventItems> Events = new List<EventItems>
         {
-        new Appointment { Start = DateTime.Today.AddDays(-2), End = DateTime.Today.AddDays(-2), Text = "Birthday" },
-        new Appointment { Start = DateTime.Today.AddDays(-11), End = DateTime.Today.AddDays(-10), Text = "Day off" },
-        new Appointment { Start = DateTime.Today.AddDays(-10), End = DateTime.Today.AddDays(-8), Text = "Work from home" },
-        new Appointment { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(12), Text = "Online meeting" },
-        new Appointment { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), Text = "Skype call" },
-        new Appointment { Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(14).AddMinutes(30), Text = "Dentist appointment" },
-        new Appointment { Start = DateTime.Today.AddDays(1), End = DateTime.Today.AddDays(12), Text = "Vacation" },
+        new EventItems { Start = DateTime.Today.AddDays(-2), End = DateTime.Today.AddDays(-2), Text = "Birthday" },
+        new EventItems { Start = DateTime.Today.AddDays(-11), End = DateTime.Today.AddDays(-10), Text = "Day off" },
+        new EventItems { Start = DateTime.Today.AddDays(-10), End = DateTime.Today.AddDays(-8), Text = "Work from home" },
+        new EventItems { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(12), Text = "Online meeting" },
+        new EventItems { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), Text = "Skype call" },
+        new EventItems { Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(14).AddMinutes(30), Text = "Dentist appointment" },
+        new EventItems { Start = DateTime.Today.AddDays(1), End = DateTime.Today.AddDays(12), Text = "Vacation" },
         };
 
         public void OnSlotRender(SchedulerSlotRenderEventArgs args)
@@ -40,11 +40,11 @@ namespace BarManager.Components.Pages.Events
         {
             if (args.View.Text != "Year")
             {
-                var data = await _dialogService.OpenAsync<AddAppointmentPage>("Add Appointment", new Dictionary<string, object> { { "Start", args.Start }, { "End", args.End } });
+                var data = await _dialogService.OpenAsync<AddEvents>("Add Appointment", new Dictionary<string, object> { { "Start", args.Start }, { "End", args.End } });
 
                 if (data != null)
                 {
-                    appointments.Add(data);
+                    Events.Add(data);
                     // Either call the Reload method or reassign the Data property of the Scheduler
                     await scheduler.Reload();
                 }
@@ -53,14 +53,14 @@ namespace BarManager.Components.Pages.Events
 
         public async Task OnMonthSelect(SchedulerMonthSelectEventArgs args) => await Task.CompletedTask;
 
-        public async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Appointment> args)
+        public async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<EventItems> args)
         {
-            await _dialogService.OpenAsync<EditAppointmentPage>("Edit Appointment", new Dictionary<string, object> { { "Appointment", args.Data } });
+            await _dialogService.OpenAsync<EditEvents>("Edit Appointment", new Dictionary<string, object> { { "Appointment", args.Data } });
 
             await scheduler.Reload();
         }
 
-        public void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Appointment> args)
+        public void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<EventItems> args)
         {
             // Never call StateHasChanged in AppointmentRender - would lead to infinite loop
 

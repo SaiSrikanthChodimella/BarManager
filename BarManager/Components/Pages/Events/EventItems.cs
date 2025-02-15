@@ -1,6 +1,6 @@
 ﻿namespace BarManager.Components.Pages.Events
 {
-    public class Appointment
+    public class EventItems
     {
         public DateTime Start { get; set; }
         public DateTime End { get; set; }

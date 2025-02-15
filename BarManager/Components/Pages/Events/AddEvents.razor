@@ -1,6 +1,6 @@
 ﻿@inject DialogService DialogService
 
-<RadzenTemplateForm TItem="Appointment" Data="@model" Submit=@OnSubmit>
+<RadzenTemplateForm TItem="EventItems" Data="@model" Submit=@OnSubmit>
     <RadzenStack Gap="1rem">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
             <RadzenLabel Text="Title" Style="width: 4rem;" />
@@ -30,7 +30,7 @@
     [Parameter]
     public DateTime End { get; set; }
 
-    Appointment model = new Appointment();
+    EventItems model = new EventItems();
 
     protected override void OnParametersSet()
     {
@@ -38,8 +38,5 @@
         model.End = End;
     }
 
-    void OnSubmit(Appointment model)
-    {
-        DialogService.Close(model);
-    }
+    void OnSubmit(EventItems model) => DialogService.Close(model);
 }
