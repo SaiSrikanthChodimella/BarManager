@@ -67,6 +67,82 @@ namespace BarManagerAPI
                 return Results.NotFound();
             });
 
+            //Menu Category 
+            app.MapGet("/MenuCategory", async (BarManagerDBContext db) => await db.MenuCategory.ToListAsync());
+
+            app.MapPost("/MenuCategory", async (MenuCategory menuCategoryItem, BarManagerDBContext db) =>
+            {
+                db.MenuCategory.Add(menuCategoryItem);
+                await db.SaveChangesAsync();
+
+                return Results.Created($"/MenuItems/{menuCategoryItem.Id}", menuCategoryItem);
+            });
+
+            app.MapPut("/MenuCategory/{id}", async (int id, MenuCategory updatedMenuCategoryItem, BarManagerDBContext db) =>
+            {
+                var menuCategory = await db.MenuCategory.FindAsync(id);
+
+                if (menuCategory is null) return Results.NotFound();
+
+                menuCategory.Id = updatedMenuCategoryItem.Id;
+                menuCategory.Name = updatedMenuCategoryItem.Name;
+
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+            });
+
+            app.MapDelete("/MenuCategory/{id}", async (int id, BarManagerDBContext db) =>
+            {
+                if (await db.MenuCategory.FindAsync(id) is MenuCategory menuCategoryItem)
+                {
+                    db.MenuCategory.Remove(menuCategoryItem);
+                    await db.SaveChangesAsync();
+                    return Results.Ok(menuCategoryItem);
+                }
+
+                return Results.NotFound();
+            });
+
+            // Team Members 
+            app.MapGet("/TeamMembers", async (BarManagerDBContext db) => await db.TeamMembers.AsNoTracking().ToListAsync());
+
+            app.MapPost("/TeamMembers", async (TeamMembers member, BarManagerDBContext db) =>
+            {
+                db.TeamMembers.Add(member);
+                await db.SaveChangesAsync();
+
+                return Results.Created($"/TeamMembers/{member.Id}", member);
+            });
+
+            app.MapPut("/TeamMembers/{id}", async (int id, TeamMembers updatedTeamMember, BarManagerDBContext db) =>
+            {
+                var TeamMember = await db.TeamMembers.FindAsync(id);
+
+                if (TeamMember is null) return Results.NotFound();
+
+                TeamMember.Name = updatedTeamMember.Name;
+                TeamMember.Description = updatedTeamMember.Description;
+                TeamMember.UserQuote = updatedTeamMember.UserQuote;
+                TeamMember.Image = updatedTeamMember.Image;
+
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+            });
+
+            app.MapDelete("/TeamMembers/{id}", async (int id, BarManagerDBContext db) =>
+            {
+                if (await db.TeamMembers.FindAsync(id) is TeamMembers teamMember)
+                {
+                    db.TeamMembers.Remove(teamMember);
+                    await db.SaveChangesAsync();
+                    return Results.Ok(teamMember);
+                }
+
+                return Results.NotFound();
+            });
+
             app.Run();
         }
     }
