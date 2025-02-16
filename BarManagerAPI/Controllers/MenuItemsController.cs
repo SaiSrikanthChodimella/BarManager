@@ -22,6 +22,11 @@ namespace BarManagerAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(MenuItem menuItem)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             await _unitOfWork.MenuItemRepository.AddAsync(menuItem);
             await _unitOfWork.SaveAsync();
 
@@ -31,6 +36,11 @@ namespace BarManagerAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, MenuItem updatedMenuItem)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var menuItem = await _unitOfWork.MenuItemRepository.GetByIdAsync(id);
 
             if (menuItem is null)

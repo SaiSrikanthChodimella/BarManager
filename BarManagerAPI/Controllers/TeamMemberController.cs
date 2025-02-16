@@ -20,6 +20,11 @@ namespace BarManagerAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TeamMembers member)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             await _unitOfWork.TeamMembersRepository.AddAsync(member);
             await _unitOfWork.SaveAsync();
 
@@ -29,6 +34,10 @@ namespace BarManagerAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, TeamMembers updatedTeamMember)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var teamMember = await _unitOfWork.TeamMembersRepository.GetByIdAsync(id);
 
             if (teamMember is null)

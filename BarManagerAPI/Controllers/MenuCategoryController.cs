@@ -22,6 +22,10 @@ namespace BarManagerAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(MenuCategory menuCategoryItem)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             await _unitOfWork.MenuCategoryRepository.AddAsync(menuCategoryItem);
             await _unitOfWork.SaveAsync();
 
@@ -31,6 +35,11 @@ namespace BarManagerAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, MenuCategory updatedMenuCategoryItem)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var menuCategory = await _unitOfWork.MenuCategoryRepository.GetByIdAsync(id);
 
             if (menuCategory is null)

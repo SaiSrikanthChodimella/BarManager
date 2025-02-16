@@ -1,5 +1,6 @@
 ﻿using BarManagerAPI.Models;
 using BarManagerAPI.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BarManagerAPI.Controllers
@@ -20,6 +21,10 @@ namespace BarManagerAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(EventItems events)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             await _unitOfWork.EventItemsRepository.AddAsync(events);
             await _unitOfWork.SaveAsync();
 
@@ -29,14 +34,26 @@ namespace BarManagerAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, EventItems updatedEventItems)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (updatedEventItems.Start >= updatedEventItems.End)
+            {
+                return BadRequest("Start date must be before End date.");
+            }
             var eventItem = await _unitOfWork.EventItemsRepository.GetByIdAsync(id);
 
             if (eventItem is null)
             {
                 return NotFound();
             }
+            if (updatedEventItems.Start >= updatedEventItems.End)
+            {
+                return BadRequest("Start date must be before End date.");
+            }
 
-            eventItem.Id = updatedEventItems.Id;
             eventItem.Start = updatedEventItems.Start;
             eventItem.End = updatedEventItems.End;
             eventItem.Text = updatedEventItems.Text;
