@@ -12,5 +12,8 @@
 
         public string Image { get; set; }
 
+        public int MenuCategoryId { get; set; } // Foreign key property
+
+        public MenuCategory? MenuCategory { get; set; }
     }
 }
