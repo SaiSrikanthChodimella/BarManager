@@ -18,9 +18,11 @@ namespace BarManagerAPI
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            builder.Services.AddProblemDetails();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-
 
             var app = builder.Build();
 
@@ -29,6 +31,8 @@ namespace BarManagerAPI
             {
                 app.MapOpenApi();
             }
+
+            app.UseExceptionHandler();
 
             app.UseHttpsRedirection();
 
