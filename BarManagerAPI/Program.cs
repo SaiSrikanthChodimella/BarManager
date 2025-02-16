@@ -1,3 +1,4 @@
+using BarManagerAPI.DTO;
 using BarManagerAPI.Models;
 using BarManagerAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -31,11 +32,11 @@ namespace BarManagerAPI
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
             app.MapGet("/MenuItems", async (IUnitOfWork unitOfWork) =>
             {
-                var items = await unitOfWork.MenuItemRepository.GetAllAsync();
-                return Results.Ok(items);
+                var items = await unitOfWork.MenuItemRepository.GetAllAsync(x => x.MenuCategory);
+                var itemDtos = items.Select(x => x.MapToMenuItemDto()).ToList();
+                return Results.Ok(itemDtos);
             });
 
             app.MapPost("/MenuItems", async (MenuItem menuItem, IUnitOfWork unitOfWork) =>
@@ -83,8 +84,9 @@ namespace BarManagerAPI
             //Menu Category 
             app.MapGet("/MenuCategory", async (IUnitOfWork unitOfWork) =>
             {
-                var items = await unitOfWork.MenuCategoryRepository.GetAllAsync();
-                return Results.Ok(items);
+                var items = await unitOfWork.MenuCategoryRepository.GetAllAsync(x => x.MenuItems);
+                var itemDtos = items.Select(x => x.MapToMenuCategoryDto()).ToList();
+                return Results.Ok(itemDtos);
             });
 
             app.MapPost("/MenuCategory", async (MenuCategory menuCategoryItem, IUnitOfWork unitOfWork) =>
