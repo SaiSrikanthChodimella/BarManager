@@ -1,28 +1,44 @@
 ﻿@page "/Team"
 
+@using BarManager.ApiClients
+@using BarManager.Models
+
+@inject TeamMemberApiClient teamMemberApiClient
+
 <PageTitle>Bar Team</PageTitle>
 
-<RadzenRow Style="margin: 1rem;">
-    @for (int i = 0; i < 20; i++) // 10 columns x 2 rows = 20 cards
-    {
+@if (forecasts is null)
+{
+    <p> Loading </p>
+
+}
+else
+{
+    <RadzenRow Style="margin: 1rem;">
+        @foreach (var member in forecasts)
+        {
             <RadzenColumn Size="1" SizeMD="2" SizeSM="4" Style="margin-bottom: 1rem;">
 
                 <RadzenCard Style="text-align: center; padding: 1rem;">
                     <RadzenImage Path="Person" Style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 1rem;" />
-                    <h3>@Name</h3>
-                    <p>@Description</p>
+                    <h3>@member.Name</h3>
+                    <p>@member.Description</p>
+                    <p>@member.Image</p>
+                    <p>@member.UserQuote</p>
                 </RadzenCard>
 
             </RadzenColumn>
-    }
-</RadzenRow>
+        }
+    </RadzenRow>
 
+}
 
 @code {
 
-    [Parameter]
-    public string Name { get; set; } = "Un Nammed User";
+    private TeamMembers[]? forecasts;
 
-    [Parameter]
-    public string Description { get; set; } = "generic Description";
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await teamMemberApiClient.GetTeamMember();
+    }
 }

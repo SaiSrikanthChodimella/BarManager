@@ -1,3 +1,4 @@
+using BarManager.ApiClients;
 using BarManager.Components;
 using BarManager.Components.Pages.Events;
 using Radzen;
@@ -19,8 +20,22 @@ public class Program
         builder.Services.AddScoped<DialogService>();
         builder.Services.AddScoped<EventsService>();
 
-        var app = builder.Build();
+        builder.Services.AddHttpClient<TeamMemberApiClient>(client =>
+        {
+            client.BaseAddress = new("https+http://BarManagerAPI/");
+        });
 
+        builder.Services.AddHttpClient<TeamMemberApiClient>(client =>
+        {
+            client.BaseAddress = new("https+http://BarManagerAPI/");
+        });
+
+        builder.Services.AddHttpClient<EventsApiClient>(client =>
+        {
+            client.BaseAddress = new("https+http://BarManagerAPI/");
+        });
+
+        var app = builder.Build();
 
         app.MapDefaultEndpoints();
         // Configure the HTTP request pipeline.
