@@ -11,6 +11,7 @@ namespace BarManagerAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.AddServiceDefaults();
             builder.Services.AddAuthorization();
             builder.Services.AddControllers();
 
@@ -26,6 +27,7 @@ namespace BarManagerAPI
 
             var app = builder.Build();
 
+            app.MapDefaultEndpoints();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BarManagerAspire\BarManagerAspire.ServiceDefaults\BarManagerAspire.ServiceDefaults.csproj" />
+  </ItemGroup>
+
 </Project>

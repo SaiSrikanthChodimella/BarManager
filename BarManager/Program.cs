@@ -10,6 +10,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.AddServiceDefaults();
         // Add services to the container.
         builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
@@ -20,6 +21,8 @@ public class Program
 
         var app = builder.Build();
 
+
+        app.MapDefaultEndpoints();
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
         {

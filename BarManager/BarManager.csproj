@@ -10,4 +10,8 @@
     <PackageReference Include="Radzen.Blazor" Version="6.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BarManagerAspire\BarManagerAspire.ServiceDefaults\BarManagerAspire.ServiceDefaults.csproj" />
+  </ItemGroup>
+
 </Project>
