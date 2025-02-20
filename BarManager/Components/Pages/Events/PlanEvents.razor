@@ -1,7 +1,65 @@
-﻿@inject EventsService EventsService
-@page "/Plan_Events"
+﻿@page "/Plan_Events"
 
-<RadzenScheduler @ref=@EventsService.scheduler SlotRender=@EventsService.OnSlotRender style="height: 768px;" TItem="EventItems" Data=@EventsService.Events StartProperty="Start" EndProperty="End"
-                 TextProperty="Text" SelectedIndex="0" SlotSelect=@EventsService.OnSlotSelect AppointmentSelect=@EventsService.OnAppointmentSelect AppointmentRender=@EventsService.OnAppointmentRender MonthSelect=@EventsService.OnMonthSelect>
-    <RadzenYearPlannerView StartMonth="@EventsService.startMonth" />
+@inject EventsService EventsService
+@inject EventsApiClient eventsApiClient
+@inject DialogService DialogService
+
+@using BarManager.ApiClients
+@using BarManager.Models
+
+
+<RadzenScheduler @ref="scheduler" style="height: 768px" TItem="EventItems" Data="@events" StartProperty="Start" EndProperty="End" TextProperty="Text"
+                 SelectedIndex="0" SlotSelect="@OnSlotSelect" AppointmentSelect="@OnAppointmentSelect" AppointmentRender="@OnAppointmentRender">
+    <RadzenMonthView />
+    <RadzenYearPlannerView StartMonth="@startMonth" />
 </RadzenScheduler>
+
+@code {
+    private RadzenScheduler<EventItems> scheduler;
+    private List<EventItems> events = new List<EventItems>();
+    private Month startMonth = Month.January;
+
+    protected override async Task OnInitializedAsync() => await LoadEventsAsync();
+
+    private async Task LoadEventsAsync()
+    {
+        var response = await eventsApiClient.GetEventsAsync();
+        response.ForEach(x => x.Text = $"{x.Text} {x.Start} {x.End}");
+        events = response;
+    }
+
+    private async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
+    {
+        // Open a dialog to add a new event
+        var newEvent = await DialogService.OpenAsync<AddEvents>("Add Event", new Dictionary<string, object> { { "Start", args.Start }, { "End", args.End } });
+
+        if (newEvent != null)
+        {
+            // Add the new event to the API
+            await eventsApiClient.AddEventItemsAsync(newEvent);
+            await LoadEventsAsync(); // Refresh the events list
+        }
+    }
+
+    private async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<EventItems> args)
+    {
+        // Open a dialog to edit the selected event
+        var updatedEvent = await DialogService.OpenAsync<EditEvents>("Edit Event",
+            new Dictionary<string, object> { { "Event", args.Data } });
+
+        if (updatedEvent != null)
+        {
+            // Update the event in the API
+            await eventsApiClient.UpdateEventItemsAsync(updatedEvent);
+            await LoadEventsAsync(); // Refresh the events list
+        }
+    }
+
+    private void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<EventItems> args)
+    {
+        if (args.Data.Text.Contains("Meeting"))
+        {
+            args.Attributes["style"] = "background: #ffcc00;"; // Yellow background for meetings
+        }
+    }
+}

@@ -4,19 +4,25 @@ namespace BarManager.ApiClients
 {
     public class EventsApiClient(HttpClient httpClient)
     {
-        public async Task<List<EventItems>> GetEvents()
+        public async Task<List<EventItems>> GetEventsAsync()
         {
             var events = new List<EventItems>();
 
-            await foreach (var forecast in httpClient.GetFromJsonAsAsyncEnumerable<EventItems>("api/TeamMembers"))
+            await foreach (var eventItem in httpClient.GetFromJsonAsAsyncEnumerable<EventItems>("api/Events"))
             {
-                if (forecast is not null)
+                if (eventItem is not null)
                 {
-                    events.Add(forecast);
+                    events.Add(eventItem);
                 }
             }
 
             return events;
         }
+
+        public async Task AddEventItemsAsync(EventItems eventItems) => await httpClient.PostAsJsonAsync("api/Events", eventItems);
+
+        public async Task UpdateEventItemsAsync(EventItems eventItems) => await httpClient.PutAsJsonAsync($"api/Events/{eventItems.Id}", eventItems);
+
+        public async Task DeleteEventItemsAsync(int id) => await httpClient.DeleteAsync($"api/Events/{id}");
     }
 }

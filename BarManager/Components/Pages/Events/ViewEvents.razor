@@ -1,8 +1,22 @@
-﻿@inject EventsService EventsService
-@page "/View_Events"
+﻿@page "/View_Events"
+
+@inject EventsService EventsService
+@inject EventsApiClient eventsApiClient;
+
+@using BarManager.ApiClients
+@using BarManager.Models
 
 <RadzenScheduler @ref=@EventsService.scheduler SlotRender=@EventsService.OnSlotRender style="height: 768px;" TItem="EventItems" Data=@EventsService.Events StartProperty="Start" EndProperty="End"
-TextProperty="Text" SelectedIndex="0" SlotSelect=@EventsService.OnSlotSelect AppointmentRender=@EventsService.OnAppointmentRender>
+                 TextProperty="Text" SelectedIndex="0" SlotSelect=@EventsService.OnSlotSelect AppointmentRender=@EventsService.OnAppointmentRender>
     <RadzenYearView StartMonth="@EventsService.startMonth" />
 </RadzenScheduler>
 
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        var events = await eventsApiClient.GetEventsAsync();
+        events.ForEach(x => x.Text = $"{x.Text} {x.Start} {x.End}");
+        EventsService.Events = events;
+    }
+}

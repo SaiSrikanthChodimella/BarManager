@@ -1,6 +1,8 @@
-﻿@inject DialogService DialogService
+﻿@using BarManager.Models
 
-<RadzenTemplateForm TItem="EventItems" Data="@model" Submit=@OnSubmit>
+@inject DialogService DialogService
+
+<RadzenTemplateForm TItem="EventItems" Data="@model" Submit="@OnSubmit">
     <RadzenStack Gap="1rem">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
             <RadzenLabel Text="Title" Style="width: 6rem;" />
@@ -19,20 +21,20 @@
         </RadzenStack>
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
             <RadzenButton ButtonType="ButtonType.Submit" Text="Save" />
+            <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Click="@OnCancel" />
         </RadzenStack>
     </RadzenStack>
 </RadzenTemplateForm>
 
 @code {
     [Parameter]
-    public EventItems EventItems { get; set; }
+    public EventItems Event { get; set; }
 
-    EventItems model = new EventItems();
+    private EventItems model = new EventItems();
 
-    protected override void OnParametersSet() => model = EventItems;
+    protected override void OnParametersSet() => model = Event;
 
-    void OnSubmit(EventItems model)
-    {
-        DialogService.Close(model);
-    }
+    private void OnSubmit(EventItems model) => DialogService.Close(model);
+
+    private void OnCancel() => DialogService.Close();
 }

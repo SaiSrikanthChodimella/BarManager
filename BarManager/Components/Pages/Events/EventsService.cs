@@ -1,5 +1,7 @@
 ﻿using Radzen.Blazor;
 using Radzen;
+using BarManager.Models;
+
 
 namespace BarManager.Components.Pages.Events
 {
@@ -10,16 +12,7 @@ namespace BarManager.Components.Pages.Events
 
         public Dictionary<DateTime, string> events = [];
         public Month startMonth = Month.January;
-        public IList<EventItems> Events = new List<EventItems>
-        {
-        new EventItems { Start = DateTime.Today.AddDays(-2), End = DateTime.Today.AddDays(-2), Text = "Birthday" },
-        new EventItems { Start = DateTime.Today.AddDays(-11), End = DateTime.Today.AddDays(-10), Text = "Day off" },
-        new EventItems { Start = DateTime.Today.AddDays(-10), End = DateTime.Today.AddDays(-8), Text = "Work from home" },
-        new EventItems { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(12), Text = "Online meeting" },
-        new EventItems { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), Text = "Skype call" },
-        new EventItems { Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(14).AddMinutes(30), Text = "Dentist appointment" },
-        new EventItems { Start = DateTime.Today.AddDays(1), End = DateTime.Today.AddDays(12), Text = "Vacation" },
-        };
+        public List<EventItems> Events = [];
 
         public void OnSlotRender(SchedulerSlotRenderEventArgs args)
         {
@@ -55,7 +48,7 @@ namespace BarManager.Components.Pages.Events
 
         public async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<EventItems> args)
         {
-            await _dialogService.OpenAsync<EditEvents>("Edit Appointment", new Dictionary<string, object> { { "Appointment", args.Data } });
+            await _dialogService.OpenAsync<EditEvents>("Edit Appointment", new Dictionary<string, object> { { "EventItems", args.Data } });
 
             await scheduler.Reload();
         }
