@@ -25,7 +25,12 @@ public class Program
             client.BaseAddress = new("https+http://BarManagerAPI/");
         });
 
-        builder.Services.AddHttpClient<TeamMemberApiClient>(client =>
+        builder.Services.AddHttpClient<MenuCategoryApiClient>(client =>
+        {
+            client.BaseAddress = new("https+http://BarManagerAPI/");
+        });
+
+        builder.Services.AddHttpClient<MenuItemsApiClient>(client =>
         {
             client.BaseAddress = new("https+http://BarManagerAPI/");
         });

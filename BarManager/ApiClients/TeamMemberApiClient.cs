@@ -4,7 +4,7 @@ namespace BarManager.ApiClients
 {
     public class TeamMemberApiClient(HttpClient httpClient)
     {
-        public async Task<List<TeamMembers>> GetTeamMember()
+        public async Task<List<TeamMembers>> GetTeamMembersAsync()
         {
             var  TeamMembers = new List<TeamMembers>();
 
@@ -19,5 +19,10 @@ namespace BarManager.ApiClients
             return TeamMembers;
         }
 
+        public async Task AddTeamMemberAsync(TeamMembers teamMember) => await httpClient.PostAsJsonAsync("api/teammembers", teamMember);
+
+        public async Task UpdateTeamMemberAsync(TeamMembers teamMember) => await httpClient.PutAsJsonAsync($"api/teammembers/{teamMember.Id}", teamMember);
+
+        public async Task DeleteTeamMemberAsync(int id) => await httpClient.DeleteAsync($"api/teammembers/{id}");
     }
 }

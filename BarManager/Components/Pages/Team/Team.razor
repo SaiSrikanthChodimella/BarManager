@@ -35,10 +35,7 @@ else
 
 @code {
 
-    private TeamMembers[]? forecasts;
+    private List<TeamMembers>? forecasts;
 
-    protected override async Task OnInitializedAsync()
-    {
-        forecasts = await teamMemberApiClient.GetTeamMember();
-    }
+    protected override async Task OnInitializedAsync() => forecasts = await teamMemberApiClient.GetTeamMembersAsync();
 }

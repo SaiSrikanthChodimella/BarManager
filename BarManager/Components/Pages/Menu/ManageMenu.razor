@@ -1,7 +1,164 @@
 ﻿@page "/ManageMenu"
+@using BarManager.ApiClients
+@using BarManager.Models
 
-<h3>ManageMenu</h3>
+@inject MenuCategoryApiClient MenuCategoryService
+@inject MenuItemsApiClient MenuItemService
+
+<style>
+    .full-width {
+        width: 100%;
+    }
+</style>
+
+<h3>Menu Categories</h3>
+<!-- Grid for Menu Categories -->
+<RadzenDataGrid @ref="categoriesGrid" Style="width:100%" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="DataGridEditMode.Single"
+                Data="@menuCategories" TItem="MenuCategory" RowCreate="@OnCreateCategory" RowUpdate="@OnUpdateCategory">
+    <Columns>
+        <RadzenDataGridColumn Property="Id" Title="ID" Width="100px" />
+        <RadzenDataGridColumn Property="Name" Title="Category Name" Width="300px">
+            <EditTemplate Context="cat">
+                <RadzenTextBox @bind-Value="cat.Name" Style="width:100%" Name="Name" />
+                <RadzenRequiredValidator Text="Name is required" Component="Name" Popup="true" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="MenuCategory">
+            <Template Context="cat">
+                <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(() => categoriesGrid.EditRow(cat))" />
+                <RadzenButton Icon="delete" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Danger" Click="@(() => DeleteCategory(cat))" />
+            </Template>
+            <EditTemplate Context="cat">
+                <RadzenButton Icon="check" Size="ButtonSize.Small" Click="@(() => categoriesGrid.UpdateRow(cat))" />
+                <RadzenButton Icon="close" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="@(() => categoriesGrid.CancelEditRow(cat))" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+    </Columns>
+    <HeaderTemplate>
+        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle" Text="Add New Category" Click="@InsertCategory" />
+    </HeaderTemplate>
+</RadzenDataGrid>
+
+<hr />
+
+<h3>Menu Items</h3>
+<!-- Grid for Menu Items -->
+<RadzenDataGrid @ref="menuItemsGrid" Style="width:100%" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="DataGridEditMode.Single"
+                Data="@menuItems" TItem="MenuItem" RowCreate="@OnCreateMenuItem" RowUpdate="@OnUpdateMenuItem">
+    <Columns>
+        <RadzenDataGridColumn Property="Id" Title="ID" Width="100px" />
+        <RadzenDataGridColumn Property="Name" Title="Item Name" Width="200px">
+            <EditTemplate Context="item">
+                <RadzenTextBox @bind-Value="item.Name" Style="width:100%" Name="Name" />
+                <RadzenRequiredValidator Text="Name is required" Component="Name" Popup="true" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Description" Title="Description" Width="200px">
+            <EditTemplate Context="item">
+                <RadzenTextBox @bind-Value="item.Description" Style="width:100%" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Price" Title="Price" Width="120px">
+            <EditTemplate Context="item">
+                <RadzenNumeric @bind-Value="item.Price" Style="width:100%" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <!-- Dropdown for MenuCategory -->
+        <RadzenDataGridColumn Property="MenuCategoryId" Title="Category" Width="200px">
+            <Template Context="item">
+                @menuCategories.FirstOrDefault(c => c.Id == item.MenuCategoryId)?.Name
+            </Template>
+            <EditTemplate Context="item">
+                <RadzenDropDown @bind-Value="item.MenuCategoryId" Data="@menuCategories" TextProperty="Name" ValueProperty="Id" Style="width:100%" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="MenuItem">
+            <Template Context="item">
+                <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(() => menuItemsGrid.EditRow(item))" />
+                <RadzenButton Icon="delete" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Danger" Click="@(() => DeleteMenuItem(item))" />
+            </Template>
+            <EditTemplate Context="item">
+                <RadzenButton Icon="check" Size="ButtonSize.Small" Click="@(() => menuItemsGrid.UpdateRow(item))" />
+                <RadzenButton Icon="close" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="@(() => menuItemsGrid.CancelEditRow(item))" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+    </Columns>
+    <HeaderTemplate>
+        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle" Text="Add New Menu Item" Click="@InsertMenuItem" />
+    </HeaderTemplate>
+</RadzenDataGrid>
 
 @code {
+    // Collections for binding to grids
+    RadzenDataGrid<MenuCategory> categoriesGrid;
+    RadzenDataGrid<MenuItem> menuItemsGrid;
 
+
+    IEnumerable<MenuCategory> menuCategories = new List<MenuCategory>();
+    IEnumerable<MenuItem> menuItems = new List<MenuItem>();
+
+    List<MenuCategory> categoriesToInsert = new List<MenuCategory>();
+    List<MenuItem> itemsToInsert = new List<MenuItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        menuCategories = await MenuCategoryService.GetMenuCategoriesAsync();
+        menuItems = await MenuItemService.GetMenuItemsAsync(); 
+    }
+
+    // Category grid methods
+    async Task InsertCategory()
+    {
+        var newCategory = new MenuCategory { Name = string.Empty };
+        categoriesToInsert.Add(newCategory);
+        await categoriesGrid.InsertRow(newCategory);
+    }
+
+    async Task OnCreateCategory(MenuCategory category)
+    {
+        await MenuCategoryService.AddMenuCategoryAsync(category);
+        categoriesToInsert.Remove(category);
+        menuCategories = await MenuCategoryService.GetMenuCategoriesAsync();
+        // Optionally, reload the menu items if needed
+    }
+
+    async Task OnUpdateCategory(MenuCategory category)
+    {
+        await MenuCategoryService.UpdateMenuCategoryAsync(category);
+        menuCategories = await MenuCategoryService.GetMenuCategoriesAsync();
+    }
+
+    async Task DeleteCategory(MenuCategory category)
+    {
+        await MenuCategoryService.DeleteMenuCategoryAsync(category.Id);
+        menuCategories = await MenuCategoryService.GetMenuCategoriesAsync();
+    }
+
+    // Menu Item grid methods
+    async Task InsertMenuItem()
+    {
+        var defaultCategoryId = menuCategories.FirstOrDefault()?.Id ?? 0;
+        var newItem = new MenuItem { Name = string.Empty, MenuCategoryId = defaultCategoryId };
+        itemsToInsert.Add(newItem);
+        await menuItemsGrid.InsertRow(newItem);
+    }
+
+    async Task OnCreateMenuItem(MenuItem item)
+    {
+        await MenuItemService.AddMenuItemAsync(item);
+        itemsToInsert.Remove(item);
+        menuItems = await MenuItemService.GetMenuItemsAsync();
+    }
+
+    async Task OnUpdateMenuItem(MenuItem item)
+    {
+        await MenuItemService.UpdateMenuItemAsync(item);
+        menuItems = await MenuItemService.GetMenuItemsAsync();
+    }
+
+    async Task DeleteMenuItem(MenuItem item)
+    {
+        await MenuItemService.DeleteMenuItemAsync(item.Id);
+        menuItems = await MenuItemService.GetMenuItemsAsync();
+    }
 }

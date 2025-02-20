@@ -1,0 +1,172 @@
+﻿@page "/TeamManager"
+@using BarManager.ApiClients
+@using BarManager.Models
+
+@inject TeamMemberApiClient TeamMembersService
+
+<style>
+    .rz-grid-table {
+    width: unset;
+    }
+</style>
+
+<RadzenCard Variant="Variant.Outlined" class="rz-my-4">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem">
+        <div>Edit Mode:</div>
+        <RadzenSelectBar @bind-Value="@editMode" TextProperty="Text" ValueProperty="Value"
+        Data="@(Enum.GetValues(typeof(DataGridEditMode)).Cast<DataGridEditMode>().Select(t => new { Text = $"{t}", Value = t }))" Size="ButtonSize.Small"
+        Disabled="@(editMode == DataGridEditMode.Multiple && teamMembersToInsert.Count() > 1)" />
+    </RadzenStack>
+</RadzenCard>
+
+<RadzenDataGrid @ref="teamMembersGrid" AllowAlternatingRows="false" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="@editMode"
+Data="@teamMembers" TItem="TeamMembers" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow" Sort="@Reset" Page="@Reset" Filter="@Reset" ColumnWidth="200px">
+    <HeaderTemplate>
+        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle" Text="Add New Team Member" Click="@InsertRow" Disabled="@(editMode == DataGridEditMode.Single && teamMembersToInsert.Count() > 0)" />
+    </HeaderTemplate>
+    <Columns>
+        <RadzenDataGridColumn Property="Id" Title="ID" Width="120px" Frozen="true" />
+        <RadzenDataGridColumn Property="Name" Title="Name" Width="200px">
+            <EditTemplate Context="teamMember">
+                <RadzenTextBox @bind-Value="teamMember.Name" Style="width:100%; display: block" Name="Name" aria-label="Enter name" />
+                <RadzenRequiredValidator Text="Name is required" Component="Name" Popup="true" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Description" Title="Description" Width="200px">
+            <EditTemplate Context="teamMember">
+                <RadzenTextBox @bind-Value="teamMember.Description" Style="width:100%; display: block" Name="Description" aria-label="Enter description" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Image" Title="Image" Width="200px">
+            <EditTemplate Context="teamMember">
+                <RadzenTextBox @bind-Value="teamMember.Image" Style="width:100%; display: block" Name="Image" aria-label="Enter image URL" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="UserQuote" Title="User Quote" Width="200px">
+            <EditTemplate Context="teamMember">
+                <RadzenTextBox @bind-Value="teamMember.UserQuote" Style="width:100%; display: block" Name="UserQuote" aria-label="Enter user quote" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Context="teamMember" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Frozen="true" FrozenPosition="FrozenColumnPosition.Right">
+            <Template Context="teamMember">
+                <RadzenButton Icon="add_circle" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Shade="Shade.Lighter" Click="@(() => InsertAfterRow(teamMember))" title="Add new row after this row" Disabled="@(editMode == DataGridEditMode.Single && teamMembersToInsert.Count() > 0)" />
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1" Click="@(args => EditRow(teamMember))" @onclick:stopPropagation="true" />
+                <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Size="ButtonSize.Medium" Shade="Shade.Lighter" class="rz-my-1 rz-ms-1" Click="@(args => DeleteRow(teamMember))" @onclick:stopPropagation="true" />
+            </Template>
+            <EditTemplate Context="teamMember">
+                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow(teamMember))" aria-label="Save" />
+                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1" Click="@((args) => CancelEdit(teamMember))" aria-label="Cancel" />
+                <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Size="ButtonSize.Medium" Shade="Shade.Lighter" class="rz-my-1 rz-ms-1" Click="@(args => DeleteRow(teamMember))" aria-label="Delete" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    RadzenDataGrid<TeamMembers> teamMembersGrid;
+    IEnumerable<TeamMembers> teamMembers;
+
+    DataGridEditMode editMode = DataGridEditMode.Single;
+
+    List<TeamMembers> teamMembersToInsert = new List<TeamMembers>();
+    List<TeamMembers> teamMembersToUpdate = new List<TeamMembers>();
+
+    void Reset()
+    {
+        teamMembersToInsert.Clear();
+        teamMembersToUpdate.Clear();
+    }
+
+    void Reset(TeamMembers teamMember)
+    {
+        teamMembersToInsert.Remove(teamMember);
+        teamMembersToUpdate.Remove(teamMember);
+    }
+
+    protected override async Task OnInitializedAsync() => teamMembers = await TeamMembersService.GetTeamMembersAsync();
+
+    async Task EditRow(TeamMembers teamMember)
+    {
+        if (!teamMembersGrid.IsValid) return;
+
+        if (editMode == DataGridEditMode.Single)
+        {
+            Reset();
+        }
+
+        teamMembersToUpdate.Add(teamMember);
+        await teamMembersGrid.EditRow(teamMember);
+    }
+
+    async Task OnUpdateRow(TeamMembers teamMember)
+    {
+        Reset(teamMember);
+
+        await TeamMembersService.UpdateTeamMemberAsync(teamMember);
+        teamMembers = await TeamMembersService.GetTeamMembersAsync();
+    }
+
+    async Task SaveRow(TeamMembers teamMember)
+    {
+        await teamMembersGrid.UpdateRow(teamMember);
+    }
+
+    void CancelEdit(TeamMembers teamMember)
+    {
+        Reset(teamMember);
+
+        teamMembersGrid.CancelEditRow(teamMember);
+    }
+
+    async Task DeleteRow(TeamMembers teamMember)
+    {
+        Reset(teamMember);
+
+        if (teamMembers.Contains(teamMember))
+        {
+            await TeamMembersService.DeleteTeamMemberAsync(teamMember.Id);
+            teamMembers = await TeamMembersService.GetTeamMembersAsync();
+        }
+        else
+        {
+            teamMembersGrid.CancelEditRow(teamMember);
+            await teamMembersGrid.Reload();
+        }
+    }
+
+    async Task InsertRow()
+    {
+        if (!teamMembersGrid.IsValid) return;
+
+        if (editMode == DataGridEditMode.Single)
+        {
+            Reset();
+        }
+
+        var teamMember = new TeamMembers();
+        teamMembersToInsert.Add(teamMember);
+        await teamMembersGrid.InsertRow(teamMember);
+    }
+
+    async Task InsertAfterRow(TeamMembers row)
+    {
+        if (!teamMembersGrid.IsValid) return;
+
+        if (editMode == DataGridEditMode.Single)
+        {
+            Reset();
+        }
+
+        var teamMember = new TeamMembers();
+        teamMembersToInsert.Add(teamMember);
+        await teamMembersGrid.InsertAfterRow(teamMember, row);
+    }
+
+    async Task OnCreateRow(TeamMembers teamMember)
+    {
+        await TeamMembersService.AddTeamMemberAsync(teamMember);
+        teamMembers = await TeamMembersService.GetTeamMembersAsync();
+
+        teamMembersToInsert.Remove(teamMember);
+    }
+}

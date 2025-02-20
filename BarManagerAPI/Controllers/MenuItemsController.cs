@@ -19,6 +19,14 @@ namespace BarManagerAPI.Controllers
             return Ok(itemDtos);
         }
 
+        [HttpGet("CategotyID/{id}")]
+        public async Task<IActionResult> GetMenuItemsByCategoryIdAsync(int id)
+        {
+            var items = await _unitOfWork.MenuItemRepository.GetAllAsync(x => x.MenuCategoryId == id);
+            var itemDtos = items.Select(x => x.MapToMenuItemDto()).ToList();
+            return Ok(itemDtos);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(MenuItem menuItem)
         {
