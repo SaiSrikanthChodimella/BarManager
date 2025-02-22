@@ -13,6 +13,9 @@ namespace BarManagerAPI.Repositories
         void Update(T entity);
 
         void Delete(T entity);
+
         Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includeProperties);
+
+        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate);
     }
 }

@@ -11,11 +11,14 @@ namespace BarManagerAPI.Repositories
         private IGenericRepository<MenuCategory> _menuCategoryRepository;
         public IGenericRepository<MenuCategory> MenuCategoryRepository => _menuCategoryRepository ?? new GenericRepository<MenuCategory>(dBContext);
 
-        private IGenericRepository<TeamMembers> _teamMemberRepository;
-        public IGenericRepository<TeamMembers> TeamMembersRepository => _teamMemberRepository ?? new GenericRepository<TeamMembers>(dBContext);
+        private IGenericRepository<TeamMember> _teamMemberRepository;
+        public IGenericRepository<TeamMember> TeamMembersRepository => _teamMemberRepository ?? new GenericRepository<TeamMember>(dBContext);
 
-        private IGenericRepository<EventItems> _eventItemsRepository;
-        public IGenericRepository<EventItems> EventItemsRepository => _eventItemsRepository ?? new GenericRepository<EventItems>(dBContext);
+        private IGenericRepository<EventItem> _eventItemsRepository;
+        public IGenericRepository<EventItem> EventItemsRepository => _eventItemsRepository ?? new GenericRepository<EventItem>(dBContext);
+
+        private IGenericRepository<User> _userRepository;
+        public IGenericRepository<User> UserRepository => _userRepository ?? new GenericRepository<User>(dBContext);
 
         public async Task SaveAsync()
         {

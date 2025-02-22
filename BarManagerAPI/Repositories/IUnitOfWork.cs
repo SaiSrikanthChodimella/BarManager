@@ -8,9 +8,11 @@ namespace BarManagerAPI.Repositories
 
         IGenericRepository<MenuCategory> MenuCategoryRepository { get; }
 
-        IGenericRepository<TeamMembers> TeamMembersRepository { get; }
+        IGenericRepository<TeamMember> TeamMembersRepository { get; }
 
-        IGenericRepository<EventItems> EventItemsRepository { get; }
+        IGenericRepository<EventItem> EventItemsRepository { get; }
+
+        IGenericRepository<User> UserRepository { get; }
 
         Task SaveAsync();
     }

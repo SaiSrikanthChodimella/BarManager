@@ -1,5 +1,6 @@
 ﻿using BarManagerAPI.Models;
 using BarManagerAPI.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BarManagerAPI.Controllers
@@ -18,7 +19,8 @@ namespace BarManagerAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(TeamMembers member)
+        [Authorize]
+        public async Task<IActionResult> Create(TeamMember member)
         {
             if (!ModelState.IsValid)
             {
@@ -32,7 +34,8 @@ namespace BarManagerAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, TeamMembers updatedTeamMember)
+        [Authorize]
+        public async Task<IActionResult> Update(int id, TeamMember updatedTeamMember)
         {
             if (!ModelState.IsValid)
             {
@@ -57,6 +60,7 @@ namespace BarManagerAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var teamMember = await _unitOfWork.TeamMembersRepository.GetByIdAsync(id);

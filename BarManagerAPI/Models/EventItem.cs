@@ -2,7 +2,7 @@
 
 namespace BarManagerAPI.Models
 {
-    public class EventItems
+    public class EventItem
     {
         public int Id { get; set; }
 

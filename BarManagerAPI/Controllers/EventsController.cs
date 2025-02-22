@@ -19,7 +19,8 @@ namespace BarManagerAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(EventItems events)
+        [Authorize]
+        public async Task<IActionResult> Create(EventItem events)
         {
             if (!ModelState.IsValid)
             {
@@ -32,7 +33,8 @@ namespace BarManagerAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, EventItems updatedEventItems)
+        [Authorize]
+        public async Task<IActionResult> Update(int id, EventItem updatedEventItems)
         {
             if (!ModelState.IsValid)
             {
@@ -65,6 +67,7 @@ namespace BarManagerAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var eventItem = await _unitOfWork.EventItemsRepository.GetByIdAsync(id);

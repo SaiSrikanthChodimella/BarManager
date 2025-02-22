@@ -2,7 +2,7 @@
 
 namespace BarManagerAPI.Models
 {
-    public class TeamMembers
+    public class TeamMember
     {
         public int Id { get; set; }
 

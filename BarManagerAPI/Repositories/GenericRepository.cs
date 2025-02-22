@@ -30,5 +30,6 @@ namespace BarManagerAPI.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate) => await dBSet.Where(predicate).ToListAsync();
     }
 }

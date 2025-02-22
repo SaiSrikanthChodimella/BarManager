@@ -33,5 +33,11 @@ namespace BarManagerAPI.DTO
                         MenuCategoryId = mi.MenuCategoryId
                     })]
         };
+
+        public static UserDTO mapToUserDTO(this User user) => new()
+        {
+            Name = user.Name,
+            PasswordHash = user.PasswordHash
+        };
     }
 }

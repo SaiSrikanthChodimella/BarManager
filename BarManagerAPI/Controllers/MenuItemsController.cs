@@ -1,6 +1,7 @@
 ﻿using BarManagerAPI.DTO;
 using BarManagerAPI.Models;
 using BarManagerAPI.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BarManagerAPI.Controllers
@@ -20,6 +21,7 @@ namespace BarManagerAPI.Controllers
         }
 
         [HttpGet("CategotyID/{id}")]
+        [Authorize]
         public async Task<IActionResult> GetMenuItemsByCategoryIdAsync(int id)
         {
             var items = await _unitOfWork.MenuItemRepository.GetAllAsync(x => x.MenuCategoryId == id);
@@ -28,6 +30,7 @@ namespace BarManagerAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create(MenuItem menuItem)
         {
             if (!ModelState.IsValid)
@@ -42,6 +45,7 @@ namespace BarManagerAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(int id, MenuItem updatedMenuItem)
         {
             if (!ModelState.IsValid)
@@ -68,6 +72,7 @@ namespace BarManagerAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var menuItem = await _unitOfWork.MenuItemRepository.GetByIdAsync(id);
